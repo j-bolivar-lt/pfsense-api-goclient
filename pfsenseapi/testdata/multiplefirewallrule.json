@@ -1,0 +1,26 @@
+{
+  "code": 0,
+  "message": "OK",
+  "data": [
+    {
+      "type": "pass",
+      "interface": ["wan"],
+      "ipprotocol": "inet",
+      "protocol": "tcp",
+      "source": "any",
+      "destination": "any",
+      "descr": "Test Rule 1",
+      "tracker": 1
+    },
+    {
+      "type": "pass",
+      "interface": ["lan"],
+      "ipprotocol": "inet",
+      "protocol": "udp",
+      "source": "any",
+      "destination": "any",
+      "descr": "Test Rule 2",
+      "tracker": 2
+    }
+  ]
+}

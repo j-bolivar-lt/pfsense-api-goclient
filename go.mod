@@ -1,4 +1,4 @@
-module github.com/sjafferali/pfsense-api-goclient/v2
+module github.com/j-bolivar-lt/pfsense-api-goclient/v2
 
 go 1.21.7
 
@@ -13,3 +13,5 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/j-bolivar-lt/pfsense-api-goclient/v2 => ./

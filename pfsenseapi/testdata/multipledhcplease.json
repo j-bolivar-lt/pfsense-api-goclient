@@ -1,0 +1,32 @@
+{
+    "status": "ok",
+    "code": 200,
+    "return": 0,
+    "message": "DHCP Leases fetched successfully",
+    "data": {
+        "leases": [
+            {
+                "ip": "192.168.1.100",
+                "mac": "00:11:22:33:44:55",
+                "hostname": "host1",
+                "if": "em0",
+                "starts": "2024/02/29 10:00:00",
+                "ends": "2024/02/29 11:00:00",
+                "active_status": "active",
+                "online_status": "online",
+                "descr": "Lease 1"
+            },
+            {
+                "ip": "192.168.1.101",
+                "mac": "AA:BB:CC:DD:EE:FF",
+                "hostname": "host2",
+                "if": "em0",
+                "starts": "2024/02/29 10:15:00",
+                "ends": "2024/02/29 11:15:00",
+                "active_status": "active",
+                "online_status": "offline",
+                "descr": "Lease 2"
+            }
+        ]
+    }
+}

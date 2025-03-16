@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	authJWTEndpoint = "api/v2/auth/jwt"
-	authKeyEndpoint = "api/v2/auth/key"
+	authJWTEndpoint  = "api/v2/auth/jwt"
+	authKeyEndpoint  = "api/v2/auth/key"
 	authKeysEndpoint = "api/v2/auth/keys"
 )
 
@@ -24,12 +24,12 @@ type RESTAPIJWT struct {
 
 // RESTAPIKey represents a REST API Key
 type RESTAPIKey struct {
-	Descr      string `json:"descr,omitempty"`
-	Username   string `json:"username,omitempty"`
-	HashAlgo   string `json:"hash_algo,omitempty"`
+	Descr       string `json:"descr,omitempty"`
+	Username    string `json:"username,omitempty"`
+	HashAlgo    string `json:"hash_algo,omitempty"`
 	LengthBytes int    `json:"length_bytes,omitempty"`
-	Hash       string `json:"hash,omitempty"`
-	Key        string `json:"key,omitempty"`
+	Hash        string `json:"hash,omitempty"`
+	Key         string `json:"key,omitempty"`
 }
 
 type restAPIKeyListResponse struct {

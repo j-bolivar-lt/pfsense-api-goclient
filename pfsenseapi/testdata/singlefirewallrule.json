@@ -1,0 +1,14 @@
+{
+  "code": 0,
+  "message": "OK",
+  "data": {
+    "type": "pass",
+    "interface": ["wan"],
+    "ipprotocol": "inet",
+    "protocol": "tcp",
+    "source": "any",
+    "destination": "any",
+    "descr": "Test Rule",
+    "tracker": 1
+  }
+}

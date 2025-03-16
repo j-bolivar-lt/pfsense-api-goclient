@@ -22,9 +22,21 @@ const (
 	bindAccessListEndpoint = "api/v2/services/bind/access_list"
 	bindViewsEndpoint = "api/v2/services/bind/views"
 	bindViewEndpoint = "api/v2/services/bind/view"
-	bindZonesEndpoint = "api/v2/services/bind/zones"
-	bindZoneEndpoint = "api/v2/services/bind/zone"
+	bindZonesEndpoint   = "api/v2/services/bind/zones"
+	bindZoneEndpoint    = "api/v2/services/bind/zone"
 )
+
+// ACMESettings represents the ACME settings
+type ACMESettings struct {
+	Enable bool `json:"enable"`
+	// Add other fields based on the OpenAPI spec
+}
+
+// BINDSettings represents the BIND settings
+type BINDSettings struct {
+	Enable bool `json:"enable"`
+	// Add other fields based on the OpenAPI spec
+}
 
 // GetACMESettings returns the current ACME settings
 func (s ACMEService) GetACMESettings(ctx context.Context) (*ACMESettings, error) {

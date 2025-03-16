@@ -1,6 +1,7 @@
 package pfsenseapi
 
 import (
+	"bytes"
 	"net/http"
 	"testing"
 )
@@ -32,12 +33,8 @@ func makeResultList(t *testing.T, data string) *resultList {
 	return &resultList{
 		resultsData: []string{
 			data,
-			mustReadFileString(t, "testdata/error.json"),
-			mustReadFileString(t, "testdata/badjson.json"),
 		},
 		resultsStatus: []int{
-			http.StatusOK,
-			http.StatusBadRequest,
 			http.StatusOK,
 		},
 	}

@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"time"
+
+	"github.com/markphelps/optional"
 )
 
 const (
@@ -103,7 +106,14 @@ func (s FirewallService) UpdateAlias(ctx context.Context, alias FirewallAlias) (
 		return nil, fmt.Errorf("error marshalling request payload into json: %w", err)
 	}
 
-	response, err := s.client.put(ctx, firewallAliasEndpoint, nil, jsonData)
+	response, err := s.client.put(
+		ctx,
+		firewallAliasEndpoint,
+		map[string]string{
+			"name": alias.Name, // Use name as ID for update
+		},
+		jsonData,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -139,18 +149,29 @@ func (s FirewallService) DeleteAlias(ctx context.Context, name string) (*Firewal
 
 // FirewallRule represents a firewall rule
 type FirewallRule struct {
-	Type            string   `json:"type"`
-	Interface       []string `json:"interface"`
-	Ipprotocol      string   `json:"ipprotocol"`
-	Protocol        string   `json:"protocol,omitempty"`
-	Source          string   `json:"source"`
-	Destination     string   `json:"destination"`
-	SourcePort      string   `json:"source_port,omitempty"`
-	DestinationPort string   `json:"destination_port,omitempty"`
-	Descr           string   `json:"descr"`
-	Disabled        bool     `json:"disabled"`
-	Tracker         int      `json:"tracker,omitempty"`
+	Type            string           `json:"type"`
+	Interface       []string         `json:"interface"`
+	Ipprotocol      string           `json:"ipprotocol"`
+	Protocol        string           `json:"protocol,omitempty"`
+	Source          string           `json:"source"`
+	Destination     string           `json:"destination"`
+	SourcePort      string           `json:"source_port,omitempty"`
+	DestinationPort string           `json:"destination_port,omitempty"`
+	Descr           string           `json:"descr"`
+	Disabled        bool             `json:"disabled"`
+	Tracker         int              `json:"tracker,omitempty"` // Use int for tracker
+	Log             optional.Bool    `json:"log,omitempty"`
+	Tag             optional.String  `json:"tag,omitempty"`
+	StatePolicy     optional.String  `json:"statetype,omitempty"`
+	Gateway         optional.String  `json:"gateway,omitempty"`
+	Quick           optional.Bool    `json:"quick,omitempty"`
+	Created         *Time            `json:"created_time,omitempty"`
+	Updated         *Time            `json:"updated_time,omitempty"`
 }
+
+// Time is a custom time type to handle unmarshalling of unix timestamps
+// returned by the pfSense API.
+type Time time.Time
 
 type firewallRuleListResponse struct {
 	apiResponse
@@ -225,7 +246,14 @@ func (s FirewallService) UpdateRule(ctx context.Context, rule FirewallRule) (*Fi
 		return nil, fmt.Errorf("error marshalling request payload into json: %w", err)
 	}
 
-	response, err := s.client.put(ctx, firewallRuleEndpoint, nil, jsonData)
+	response, err := s.client.put(
+		ctx,
+		firewallRuleEndpoint,
+		map[string]string{
+			"tracker": strconv.Itoa(rule.Tracker),
+		},
+		jsonData,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -291,56 +319,14 @@ type FirewallState struct {
 	Source       string `json:"source"`
 	Destination  string `json:"destination"`
 	State        string `json:"state"`
+	Age          string `json:"age,omitempty"`
+	ExpiresIn    string `json:"expires_in,omitempty"`
 	PacketsTotal int    `json:"packets_total"`
+	PacketsIn    int    `json:"packets_in,omitempty"`
+	PacketsOut   int    `json:"packets_out,omitempty"`
 	BytesTotal   int    `json:"bytes_total"`
-}
-
-// GetStates returns the current firewall states
-func (s FirewallService) GetStates(ctx context.Context) ([]*FirewallState, error) {
-	response, err := s.client.get(ctx, firewallStateEndpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp := new(struct {
-		apiResponse
-		Data []*FirewallState `json:"data"`
-	})
-	if err = json.Unmarshal(response, resp); err != nil {
-		return nil, fmt.Errorf("error unmarshalling response: %w", err)
-	}
-
-	return resp.Data, nil
-}
-
-// FirewallState represents a firewall state
-type FirewallState struct {
-	Interface    string `json:"interface"`
-	Protocol     string `json:"protocol"`
-	Direction    string `json:"direction"`
-	Source       string `json:"source"`
-	Destination  string `json:"destination"`
-	State        string `json:"state"`
-	PacketsTotal int    `json:"packets_total"`
-	BytesTotal   int    `json:"bytes_total"`
-}
-
-// GetStates returns the current firewall states
-func (s FirewallService) GetStates(ctx context.Context) ([]*FirewallState, error) {
-	response, err := s.client.get(ctx, firewallStateEndpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp := new(struct {
-		apiResponse
-		Data []*FirewallState `json:"data"`
-	})
-	if err = json.Unmarshal(response, resp); err != nil {
-		return nil, fmt.Errorf("error unmarshalling response: %w", err)
-	}
-
-	return resp.Data, nil
+	BytesIn      int    `json:"bytes_in,omitempty"`
+	BytesOut     int    `json:"bytes_out,omitempty"`
 }
 
 // FirewallStatesSize represents the firewall states size configuration

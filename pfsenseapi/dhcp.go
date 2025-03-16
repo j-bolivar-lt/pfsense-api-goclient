@@ -8,9 +8,11 @@ import (
 
 const (
 	dhcpServerEndpoint  = "api/v2/services/dhcpserver"
-	dhcpServersEndpoint = "api/v2/services/dhcpserver"
+	dhcpServersEndpoint = "api/v2/services/dhcpserver/interfaces" // Plural for listing
 	dhcpLeasesEndpoint  = "api/v2/services/dhcp/leases"
 	dhcpApplyEndpoint   = "api/v2/services/dhcp/apply"
+    dhcpStaticMappingEndpoint = "api/v2/services/dhcpserver/static_mapping" //singular
+    dhcpStaticMappingsEndpoint = "api/v2/services/dhcpserver/static_mappings" //plural
 )
 
 // DHCPService provides DHCP API methods
@@ -175,15 +177,17 @@ func (s DHCPService) ListLeases(ctx context.Context) ([]*DHCPLease, error) {
 		return nil, err
 	}
 
-	resp := new(struct {
-		apiResponse
-		Data []*DHCPLease `json:"data"`
-	})
-	if err = json.Unmarshal(response, resp); err != nil {
-		return nil, fmt.Errorf("error unmarshalling response: %w", err)
-	}
+    resp := new(struct {
+        apiResponse
+        Data struct {
+            Leases []*DHCPLease `json:"leases"` // Correct nesting
+        } `json:"data"`
+    })
+    if err = json.Unmarshal(response, resp); err != nil {
+        return nil, fmt.Errorf("error unmarshalling response: %w", err)
+    }
 
-	return resp.Data, nil
+    return resp.Data.Leases, nil
 }
 
 // DHCPApply represents the response from applying DHCP changes
@@ -204,6 +208,48 @@ func (s DHCPService) Apply(ctx context.Context) (*DHCPApply, error) {
 	})
 	if err = json.Unmarshal(response, resp); err != nil {
 		return nil, fmt.Errorf("error unmarshalling response: %w", err)
+	}
+
+	return resp.Data, nil
+}
+
+type dhcpStaticMappingListResponse struct {
+	apiResponse
+	Data []*DHCPServerStaticMapping `json:"data"` // Corrected: Directly an array
+}
+
+// ListStaticMappings returns a list of DHCP static mappings
+func (s DHCPService) ListStaticMappings(ctx context.Context) ([]*DHCPServerStaticMapping, error) {
+	response, err := s.client.get(ctx, dhcpStaticMappingsEndpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(dhcpStaticMappingListResponse)
+	if err = json.Unmarshal(response, resp); err != nil {
+		return nil, fmt.Errorf("error unmarshalling response: %w", err)
+	}
+
+	return resp.Data, nil
+}
+
+type dhcpStaticMappingResponse struct {
+	apiResponse
+	Data *DHCPServerStaticMapping `json:"data"`
+}
+
+func (s *DHCPService) GetStaticMapping(ctx context.Context, id string) (*DHCPServerStaticMapping, error) {
+	response, err := s.client.get(ctx, dhcpStaticMappingEndpoint, map[string]string{"id": id})
+	if err != nil {
+		return nil, err
+	}
+	resp := new(dhcpStaticMappingResponse)
+
+	if err = json.Unmarshal(response, resp); err != nil {
+		return nil, fmt.Errorf("error unmarshalling response: %w", err)
+	}
+	if resp.Code != 200 {
+		return nil, fmt.Errorf("non 2xx response code received: %d", resp.Code)
 	}
 
 	return resp.Data, nil

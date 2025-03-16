@@ -1,0 +1,19 @@
+{
+  "status": "ok",
+  "code": 200,
+  "return": 0,
+  "message": "Static mappings fetched successfully",
+  "data": [
+    {
+      "mac": "00:11:22:33:44:55",
+      "ipaddr": "192.168.1.10",
+      "hostname": "static-host-1"
+    },
+    {
+      "mac": "AA:BB:CC:DD:EE:FF",
+      "ipaddr": "192.168.1.11",
+      "hostname": "static-host-2",
+      "descr": "Example static mapping"
+    }
+  ]
+}
