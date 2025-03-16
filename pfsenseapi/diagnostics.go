@@ -137,32 +137,3 @@ func (s DiagnosticsService) GetConfigHistoryRevision(ctx context.Context, id str
 
 	return resp.Data, nil
 }
-
-// systemActionRequest represents a system halt or reboot request
-type systemActionRequest struct {
-	DryRun bool `json:"dry_run"`
-}
-
-func (s DiagnosticsService) systemAction(ctx context.Context, endpoint string, dryRun bool) error {
-	action := systemActionRequest{
-		DryRun: dryRun,
-	}
-
-	jsonData, err := json.Marshal(action)
-	if err != nil {
-		return fmt.Errorf("error marshalling request payload into json: %w", err)
-	}
-
-	_, err = s.client.post(ctx, endpoint, nil, jsonData)
-	return err
-}
-
-// Halt halts the system
-func (s DiagnosticsService) Halt(ctx context.Context, dryRun bool) error {
-	return s.systemAction(ctx, haltSystemEndpoint, dryRun)
-}
-
-// Reboot reboots the system
-func (s DiagnosticsService) Reboot(ctx context.Context, dryRun bool) error {
-	return s.systemAction(ctx, rebootSystemEndpoint, dryRun)
-}
