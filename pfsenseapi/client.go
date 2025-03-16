@@ -45,9 +45,10 @@ type Client struct {
 	Bridge    *BridgeService
 	Firewall  *FirewallService
 	DHCP      *DHCPService
-	DNS       *DNSService
-	Routing   *RoutingService
-	System    *SystemService
+	DNS         *DNSService
+	Routing     *RoutingService
+	System      *SystemService
+	Diagnostics *DiagnosticsService
 }
 
 // Config provides configuration for the client. These values are only read in
@@ -100,6 +101,7 @@ func NewClient(config Config) *Client {
 	newClient.DNS = &DNSService{client: newClient}
 	newClient.Routing = &RoutingService{client: newClient}
 	newClient.System = &SystemService{client: newClient}
+	newClient.Diagnostics = &DiagnosticsService{client: newClient}
 	return newClient
 }
 
@@ -114,6 +116,7 @@ func NewClientWithNoAuth(host string) *Client {
 
 	newClient := NewClient(config)
 	newClient.System = &SystemService{client: newClient}
+	newClient.Diagnostics = &DiagnosticsService{client: newClient}
 	return newClient
 }
 
@@ -131,6 +134,7 @@ func NewClientWithLocalAuth(host, user, password string) *Client {
 
 	newClient := NewClient(config)
 	newClient.System = &SystemService{client: newClient}
+	newClient.Diagnostics = &DiagnosticsService{client: newClient}
 	return newClient
 }
 
@@ -149,6 +153,7 @@ func NewClientWithJWTAuth(host, user, password string) *Client {
 
 	newClient := NewClient(config)
 	newClient.System = &SystemService{client: newClient}
+	newClient.Diagnostics = &DiagnosticsService{client: newClient}
 	return newClient
 }
 
@@ -164,6 +169,7 @@ func NewClientWithTokenAuth(host, apiClientID, apiClientToken string) *Client {
 	}
 	newClient := NewClient(config)
 	newClient.System = &SystemService{client: newClient}
+	newClient.Diagnostics = &DiagnosticsService{client: newClient}
 	return newClient
 }
 

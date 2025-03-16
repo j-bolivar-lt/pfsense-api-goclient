@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/markphelps/optional"
 )
@@ -174,22 +173,12 @@ func (s InterfaceService) UpdateInterface(
 
 	response, err := s.client.patch(ctx, interfaceEndpoint, nil, jsonData)
 	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling response: %w", err)
+		return nil, err
 	}
 
 	resp := new(createInterfaceResponse)
 	if err = json.Unmarshal(response, resp); err != nil {
-		return nil, err
-	}
-	if err = json.Unmarshal(response, resp); err != nil {
 		return nil, fmt.Errorf("error unmarshalling response: %w", err)
 	}
-	return nil
-}
-
-pfsenseapi/system.go
-````
-<<<<<<< SEARCH
 	return resp.Data, nil
 }
-
