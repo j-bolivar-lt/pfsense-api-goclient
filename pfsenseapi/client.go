@@ -272,6 +272,9 @@ func (c *Client) get(ctx context.Context, endpoint string, queryMap map[string]s
 		return nil, err
 	}
 
+	// Trim null bytes from the response
+	respbody = bytes.TrimRight(respbody, "\x00")
+
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		err, ok := responseCodeErrorMap[res.StatusCode]
 		if !ok {
@@ -299,6 +302,9 @@ func (c *Client) post(ctx context.Context, endpoint string, queryMap map[string]
 	if err != nil {
 		return nil, err
 	}
+
+	// Trim null bytes from the response
+	respbody = bytes.TrimRight(respbody, "\x00")
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		err, ok := responseCodeErrorMap[res.StatusCode]
@@ -329,6 +335,9 @@ func (c *Client) patch(ctx context.Context, endpoint string, queryMap map[string
 		return nil, err
 	}
 
+	// Trim null bytes from the response
+	respbody = bytes.TrimRight(respbody, "\x00")
+
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		err, ok := responseCodeErrorMap[res.StatusCode]
 		if !ok {
@@ -357,6 +366,9 @@ func (c *Client) put(ctx context.Context, endpoint string, queryMap map[string]s
 		return nil, err
 	}
 
+	// Trim null bytes from the response
+	respbody = bytes.TrimRight(respbody, "\x00")
+
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		err, ok := responseCodeErrorMap[res.StatusCode]
 		if !ok {
@@ -384,6 +396,9 @@ func (c *Client) delete(ctx context.Context, endpoint string, queryMap map[strin
 	if err != nil {
 		return nil, err
 	}
+
+	// Trim null bytes from the response
+	respbody = bytes.TrimRight(respbody, "\x00")
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		err, ok := responseCodeErrorMap[res.StatusCode]
