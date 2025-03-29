@@ -12,7 +12,82 @@ const (
 	systemVersionEndpoint = "api/v2/system/version"
 	systemConfigEndpoint  = "api/v2/system/config"
 	systemCronEndpoint    = "api/v2/system/cron"
+	systemDNSEndpoint     = "api/v2/system/dns"
+	systemStatusEndpoint  = "api/v2/status/system"
 )
+
+type dnsSystem struct {
+	DnsAllowOverride bool     `json:"dnsallowoverride"`
+	DnsLocalhost     string   `json:"dnslocalhost,omitempty"`
+	DnsServer        []string `json:"dnsserver"`
+}
+
+type SystemStatusResponse struct {
+	Platform      string `json:"platform"`
+	Serial        string `json:"serial"`
+	NetgateDevice string `json:"netgate_id"`
+	Uptime        string `json:"uptime"`
+	Bios_vendor   string `json:"bios_vendor"`
+	Bios_version  string `json:"bios_version"`
+	Kernel_pti    bool   `json:"kernel_pti"`
+	Cpu_model     string `json:"cpu_model"`
+}
+
+type SystemStatus struct {
+	apiResponse
+	Data SystemStatusResponse `json:"data"`
+}
+
+type dnsSystemResponse struct {
+	apiResponse
+	Data dnsSystem `json:"data"`
+}
+
+func (s *SystemService) GetSystemStatus(ctx context.Context) (*SystemStatus, error) {
+	response, err := s.client.get(ctx, systemStatusEndpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(SystemStatus)
+	if err = json.Unmarshal(response, resp); err != nil {
+		return nil, fmt.Errorf("error unmarshalling response: %w", err)
+	}
+	return resp, nil
+}
+
+func (s *SystemService) GetDNSResolverSettings(ctx context.Context) (*dnsSystemResponse, error) {
+	response, err := s.client.get(ctx, systemDNSEndpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(dnsSystemResponse)
+	if err = json.Unmarshal(response, resp); err != nil {
+		return nil, fmt.Errorf("error unmarshalling response: %w", err)
+	}
+	return resp, nil
+}
+
+func (s *SystemService) PatchDNSResolverSettings(ctx context.Context, d dnsSystem) (*dnsSystemResponse, error) {
+	// Convert the dnsSystem struct to JSON
+	body, err := json.Marshal(d)
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling request: %w", err)
+	}
+
+	// Call patch with the correct parameter order: ctx, endpoint, queryMap, body
+	response, err := s.client.patch(ctx, systemDNSEndpoint, nil, body)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(dnsSystemResponse)
+	if err = json.Unmarshal(response, resp); err != nil {
+		return nil, fmt.Errorf("error unmarshalling response: %w", err)
+	}
+	return resp, nil
+}
 
 // SystemService provides system API methods
 type SystemService service

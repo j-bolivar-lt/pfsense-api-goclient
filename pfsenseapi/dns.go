@@ -7,13 +7,14 @@ import (
 )
 
 const (
-	dnsResolverEndpoint          = "api/v2/services/unbound"
-	dnsResolverApplyEndpoint     = "api/v2/services/unbound/apply"
-	dnsResolverHostOverrideEndpoint = "api/v2/services/unbound/host_override"
-	dnsResolverDomainOverrideEndpoint = "api/v2/services/unbound/domain_override"
-	dnsForwarderEndpoint         = "api/v2/services/dnsforwarder"
-	dnsForwarderApplyEndpoint    = "api/v2/services/dnsforwarder/apply"
-	dnsForwarderHostOverrideEndpoint = "api/v2/services/dnsforwarder/host_override"
+	dnsResolverEndpoint               = "api/v2/services/unbound"
+	dnsResolverApplyEndpoint          = "api/v2/services/unbound/apply"
+	dnsResolverHostOverrideEndpoint   = "api/v2/services/dns_resolver/host_override"
+	dnsResolverHostOverrideEndpoints  = "api/v2/services/dns_resolver/host_overrides"
+	dnsResolverDomainOverrideEndpoint = "api/v2/services/dns_resolver/domain_overrides"
+	dnsForwarderEndpoint              = "api/v2/services/dnsforwarder"
+	dnsForwarderApplyEndpoint         = "api/v2/services/dnsforwarder/apply"
+	dnsForwarderHostOverrideEndpoint  = "api/v2/services/dnsforwarder/host_override"
 )
 
 // DNSService provides DNS API methods
@@ -21,19 +22,19 @@ type DNSService service
 
 // DNSResolverSettings represents the DNS resolver settings
 type DNSResolverSettings struct {
-	Enable             bool     `json:"enable"`
-	Port               string   `json:"port,omitempty"`
-	EnableSSL          bool     `json:"enablessl"`
-	SSLCertRef         string   `json:"sslcertref,omitempty"`
-	TLSPort            string   `json:"tlsport,omitempty"`
-	ActiveInterface    []string `json:"active_interface,omitempty"`
-	OutgoingInterface  []string `json:"outgoing_interface,omitempty"`
-	DNSSEC             bool     `json:"dnssec"`
-	Forwarding         bool     `json:"forwarding"`
-	RegDHCP            bool     `json:"regdhcp"`
-	RegDHCPStatic      bool     `json:"regdhcpstatic"`
-	RegOpenVPNClients  bool     `json:"regovpnclients"`
-	CustomOptions      string   `json:"custom_options,omitempty"`
+	Enable            bool     `json:"enable"`
+	Port              string   `json:"port,omitempty"`
+	EnableSSL         bool     `json:"enablessl"`
+	SSLCertRef        string   `json:"sslcertref,omitempty"`
+	TLSPort           string   `json:"tlsport,omitempty"`
+	ActiveInterface   []string `json:"active_interface,omitempty"`
+	OutgoingInterface []string `json:"outgoing_interface,omitempty"`
+	DNSSEC            bool     `json:"dnssec"`
+	Forwarding        bool     `json:"forwarding"`
+	RegDHCP           bool     `json:"regdhcp"`
+	RegDHCPStatic     bool     `json:"regdhcpstatic"`
+	RegOpenVPNClients bool     `json:"regovpnclients"`
+	CustomOptions     string   `json:"custom_options,omitempty"`
 }
 
 // GetDNSResolverSettings returns the DNS resolver settings
@@ -102,10 +103,10 @@ func (s DNSService) ApplyDNSResolver(ctx context.Context) (*DNSResolverApply, er
 
 // DNSResolverHostOverride represents a DNS resolver host override
 type DNSResolverHostOverride struct {
-	Host    string   `json:"host"`
-	Domain  string   `json:"domain"`
-	IP      []string `json:"ip"`
-	Descr   string   `json:"descr,omitempty"`
+	Host    string                         `json:"host"`
+	Domain  string                         `json:"domain"`
+	IP      []string                       `json:"ip"`
+	Descr   string                         `json:"descr,omitempty"`
 	Aliases []DNSResolverHostOverrideAlias `json:"aliases,omitempty"`
 }
 
@@ -118,7 +119,7 @@ type DNSResolverHostOverrideAlias struct {
 
 // GetDNSResolverHostOverrides returns the DNS resolver host overrides
 func (s DNSService) GetDNSResolverHostOverrides(ctx context.Context) ([]*DNSResolverHostOverride, error) {
-	response, err := s.client.get(ctx, dnsResolverHostOverrideEndpoint, nil)
+	response, err := s.client.get(ctx, dnsResolverHostOverrideEndpoints, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -159,11 +160,11 @@ func (s DNSService) CreateDNSResolverHostOverride(ctx context.Context, override 
 
 // DNSResolverDomainOverride represents a DNS resolver domain override
 type DNSResolverDomainOverride struct {
-	Domain            string `json:"domain"`
-	IP                string `json:"ip"`
-	Descr             string `json:"descr,omitempty"`
+	Domain             string `json:"domain"`
+	IP                 string `json:"ip"`
+	Descr              string `json:"descr,omitempty"`
 	ForwardTLSUpstream bool   `json:"forward_tls_upstream"`
-	TLSHostname       string `json:"tls_hostname,omitempty"`
+	TLSHostname        string `json:"tls_hostname,omitempty"`
 }
 
 // GetDNSResolverDomainOverrides returns the DNS resolver domain overrides
@@ -209,13 +210,13 @@ func (s DNSService) CreateDNSResolverDomainOverride(ctx context.Context, overrid
 
 // DNSForwarderSettings represents the DNS forwarder settings
 type DNSForwarderSettings struct {
-	Enable      bool     `json:"enable"`
-	Interfaces  []string `json:"interfaces,omitempty"`
-	Port        string   `json:"port,omitempty"`
-	DNSServers  []string `json:"dnsservers,omitempty"`
-	StrictOrder bool     `json:"strict_order"`
-	RegDHCP     bool     `json:"regdhcp"`
-	RegDHCPStatic bool   `json:"regdhcpstatic"`
+	Enable        bool     `json:"enable"`
+	Interfaces    []string `json:"interfaces,omitempty"`
+	Port          string   `json:"port,omitempty"`
+	DNSServers    []string `json:"dnsservers,omitempty"`
+	StrictOrder   bool     `json:"strict_order"`
+	RegDHCP       bool     `json:"regdhcp"`
+	RegDHCPStatic bool     `json:"regdhcpstatic"`
 }
 
 // GetDNSForwarderSettings returns the DNS forwarder settings
@@ -284,10 +285,10 @@ func (s DNSService) ApplyDNSForwarder(ctx context.Context) (*DNSForwarderApply, 
 
 // DNSForwarderHostOverride represents a DNS forwarder host override
 type DNSForwarderHostOverride struct {
-	Host    string `json:"host"`
-	Domain  string `json:"domain"`
-	IP      string `json:"ip"`
-	Descr   string `json:"descr,omitempty"`
+	Host    string                          `json:"host"`
+	Domain  string                          `json:"domain"`
+	IP      string                          `json:"ip"`
+	Descr   string                          `json:"descr,omitempty"`
 	Aliases []DNSForwarderHostOverrideAlias `json:"aliases,omitempty"`
 }
 

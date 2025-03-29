@@ -50,6 +50,52 @@ func (s DiagnosticsService) ListARPEntries(ctx context.Context) ([]*ARPTable, er
 	return resp.Data, nil
 }
 
+// SystemHalt represents the system halt response
+type SystemHalt struct {
+	Confirmed bool `json:"confirmed"`
+}
+
+// HaltSystem halts the system
+func (s *DiagnosticsService) HaltSystem(ctx context.Context) (*SystemHalt, error) {
+	response, err := s.client.post(ctx, haltSystemEndpoint, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(struct {
+		apiResponse
+		Data *SystemHalt `json:"data"`
+	})
+	if err = json.Unmarshal(response, resp); err != nil {
+		return nil, fmt.Errorf("error unmarshalling response: %w", err)
+	}
+
+	return resp.Data, nil
+}
+
+// SystemReboot represents the system reboot response
+type SystemReboot struct {
+	Confirmed bool `json:"confirmed"`
+}
+
+// RebootSystem reboots the system
+func (s *DiagnosticsService) RebootSystem(ctx context.Context) (*SystemReboot, error) {
+	response, err := s.client.post(ctx, rebootSystemEndpoint, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(struct {
+		apiResponse
+		Data *SystemReboot `json:"data"`
+	})
+	if err = json.Unmarshal(response, resp); err != nil {
+		return nil, fmt.Errorf("error unmarshalling response: %w", err)
+	}
+
+	return resp.Data, nil
+}
+
 // CommandPrompt represents a command prompt execution
 type CommandPrompt struct {
 	Command    string `json:"command"`
