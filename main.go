@@ -17,7 +17,8 @@ func main() {
 	// Create a new client with local authentication
 	password := os.Getenv("PFSENSE_PASSWORD")
 	admin := os.Getenv("PFSENSE_ADMIN")
-	client := pfsenseapi.NewClientWithLocalAuth("http://10.5.3.69:10443", admin, password)
+	pfhost := os.Getenv("PFSENSE_HOST")
+	client := pfsenseapi.NewClientWithLocalAuth(pfhost, admin, password)
 
 	// Set a timeout for the context
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -60,35 +61,43 @@ func main() {
 	}
 
 	for _, host := range dnsHostResponse {
+		fmt.Printf("ID: %d\n", host.Id)
 		fmt.Printf("Domain: %s\n", host.Domain)
 		for key, ip := range host.IP {
 			fmt.Printf("IP %d: %s\n", key, ip)
 		}
 	}
 
-	// DNSHostConfigArray := make([]DNSResolverHostOverrideAlias, 0)
+	DNSHostConfigArray := make([]DNSResolverHostOverrideAlias, 0)
 
-	// DNSHostConfigArray = append(DNSHostConfigArray, DNSResolverHostOverrideAlias{
-	// 	Host:   "test",
-	// 	Domain: "test.com",
-	// 	Descr:  "test"},
-	// )
+	DNSHostConfigArray = append(DNSHostConfigArray, DNSResolverHostOverrideAlias{
+		Host:   "test",
+		Domain: "test.com",
+		Descr:  "test"},
+	)
 
-	// request := DNSResolverHostOverride{
-	// 	Host:    "test",
-	// 	Domain:  "test.com",
-	// 	IP:      []string{"0.0.0.0"},
-	// 	Aliases: DNSHostConfigArray}
+	request := DNSResolverHostOverride{
+		Host:    "test",
+		Domain:  "test.com",
+		IP:      []string{"0.0.0.0"},
+		Aliases: DNSHostConfigArray}
 
-	// dnsResponse, error := client.DNS.CreateDNSResolverHostOverride(ctx, request)
+	dnsResponse, error := client.DNS.CreateDNSResolverHostOverride(ctx, request)
 
-	// if error != nil {
-	// 	log.Fatalf("Error creating DNS resolver host override: %v", error)
-	// }
+	if error != nil {
+		log.Fatalf("Error creating DNS resolver host override: %v", error)
+	}
 
-	// for _, alias := range dnsResponse.Aliases {
-	// 	fmt.Printf("Alias: %s\n", alias.Host)
-	// }
+	fmt.Println("Succesfully Created DNSHostOverride")
+	fmt.Println("Host Override ID Created", dnsResponse.Id)
+
+	for _, alias := range dnsResponse.Aliases {
+		fmt.Printf("Alias: %s\n", alias.Host)
+	}
+
+	dnsResponseDelete, error := client.DNS.DeleteDNSResolverHostOverride(ctx, request)
+
+	fmt.Println("Deleted The following DNS ID Override ", dnsResponseDelete.Id)
 
 	// List interfaces
 	interfaces, err := client.Interface.ListInterfaces(ctx)

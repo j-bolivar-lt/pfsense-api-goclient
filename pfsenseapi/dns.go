@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 const (
@@ -103,6 +104,7 @@ func (s DNSService) ApplyDNSResolver(ctx context.Context) (*DNSResolverApply, er
 
 // DNSResolverHostOverride represents a DNS resolver host override
 type DNSResolverHostOverride struct {
+	Id      int                            `json:"id,omitempty"`
 	Host    string                         `json:"host"`
 	Domain  string                         `json:"domain"`
 	IP      []string                       `json:"ip"`
@@ -127,6 +129,31 @@ func (s DNSService) GetDNSResolverHostOverrides(ctx context.Context) ([]*DNSReso
 	resp := new(struct {
 		apiResponse
 		Data []*DNSResolverHostOverride `json:"data"`
+	})
+	if err = json.Unmarshal(response, resp); err != nil {
+		return nil, fmt.Errorf("error unmarshalling response: %w", err)
+	}
+
+	return resp.Data, nil
+}
+
+// CreateDNSResolverHostOverride creates a new DNS resolver host override
+func (s DNSService) DeleteDNSResolverHostOverride(ctx context.Context, override DNSResolverHostOverride) (*DNSResolverHostOverride, error) {
+
+	queryMap := make(map[string]string)
+
+	queryMap["id"] = strconv.Itoa(override.Id)
+	queryMap["apply"] = "false"
+
+	response, err := s.client.delete(ctx, dnsResolverHostOverrideEndpoint, queryMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(struct {
+		apiResponse
+		Data *DNSResolverHostOverride `json:"data"`
 	})
 	if err = json.Unmarshal(response, resp); err != nil {
 		return nil, fmt.Errorf("error unmarshalling response: %w", err)

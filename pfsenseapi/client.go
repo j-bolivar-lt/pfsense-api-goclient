@@ -40,11 +40,11 @@ type Client struct {
 	client *http.Client
 	Cfg    Config
 
-	Interface *InterfaceService
-	User      *UserService
-	Bridge    *BridgeService
-	Firewall  *FirewallService
-	DHCP      *DHCPService
+	Interface   *InterfaceService
+	User        *UserService
+	Bridge      *BridgeService
+	Firewall    *FirewallService
+	DHCP        *DHCPService
 	DNS         *DNSService
 	Routing     *RoutingService
 	System      *SystemService
